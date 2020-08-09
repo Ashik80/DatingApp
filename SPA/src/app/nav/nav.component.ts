@@ -2,26 +2,38 @@ import { AlertifyService } from './../_services/alertify.service';
 import { AuthService } from './../_services/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { faUser, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-nav',
   templateUrl: './nav.component.html',
-  styleUrls: ['./nav.component.css']
+  styleUrls: ['./nav.component.css'],
 })
 export class NavComponent implements OnInit {
   model: any = {};
   faUser = faUser;
   faSignOutAlt = faSignOutAlt;
 
-  constructor(public authService: AuthService, private alertify: AlertifyService) { }
+  constructor(
+    public authService: AuthService,
+    private alertify: AlertifyService,
+    private router: Router
+  ) { }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void { }
 
   login(): void {
-    this.authService.login(this.model).subscribe(next => {
-      this.alertify.success('Logged in successfully');
-    }, error => this.alertify.error(error));
+    this.authService.login(this.model).subscribe(
+      () => {
+        this.alertify.success('Logged in successfully');
+      },
+      (error) => {
+        this.alertify.error(error);
+      },
+      () => {
+        this.router.navigate(['/members']);
+      }
+    );
   }
 
   loggedIn(): boolean {
@@ -32,5 +44,4 @@ export class NavComponent implements OnInit {
     localStorage.removeItem('token');
     this.alertify.message('Logged out');
   }
-
 }

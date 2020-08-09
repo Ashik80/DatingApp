@@ -1,5 +1,7 @@
+import { AlertifyService } from './../_services/alertify.service';
 import { AuthService } from './../_services/auth.service';
 import { Component, OnInit } from '@angular/core';
+import { faUser, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-nav',
@@ -8,25 +10,27 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NavComponent implements OnInit {
   model: any = {};
+  faUser = faUser;
+  faSignOutAlt = faSignOutAlt;
 
-  constructor(private authService: AuthService) { }
+  constructor(public authService: AuthService, private alertify: AlertifyService) { }
 
   ngOnInit(): void {
   }
 
   login(): void {
     this.authService.login(this.model).subscribe(next => {
-      console.log('Logged in successfully');
-    }, error => console.log(error));
+      this.alertify.success('Logged in successfully');
+    }, error => this.alertify.error(error));
   }
 
   loggedIn(): boolean {
-    return !!localStorage.getItem('token');
+    return this.authService.loggedIn();
   }
 
   logout(): void {
     localStorage.removeItem('token');
-    console.log('Logged out');
+    this.alertify.message('Logged out');
   }
 
 }
